@@ -1,0 +1,35 @@
+service: lambda-sns-dlq-error-handling # NOTE: update this with your service name
+plugins:
+  - serverless-pseudo-parameters
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+  region: us-east-1
+  memorySize: 128
+  environment:
+    accountId: '#{AWS::AccountId}'
+    region: '#{AWS::Region}'
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Resource: '*'
+      Action:
+        - 'sns:*'
+  functions:
+    init:
+      handler: init.handler
+      events:
+        - http:
+            path: init
+            method: post
+            cors: true
+    calculate:
+      handler: calculate.handler
+      events:
+        - sns: calculate-topic # created immediately
+      onError: arn:aws:sns:#{AWS::Region}:#{AWS::AccountId}:dlq-topic
+    error:
+      handler: error.handler
+      events:
+        - sns: dlq-topic # created immediately
