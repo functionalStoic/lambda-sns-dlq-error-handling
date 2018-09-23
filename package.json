@@ -2,5 +2,8 @@
   "name": "lambda-sns-dlq-error-handling",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "serverless-pseudo-parameters": "^2.2.0"
+  }
 }
